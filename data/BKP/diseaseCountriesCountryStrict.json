@@ -1,0 +1,40 @@
+-----------------------------------------------------------------------
+https://disease.sh/v3/covid-19/countries/brazil/?strict=false
+
+strict
+	true: 	aceita Brasil e Brazil
+	false:	só aceita Brazil
+-----------------------------------------------------------------------
+
+{
+	"updated": 1688610002921,
+	"country": "Brazil",
+	"countryInfo": {
+		"_id": 76,
+		"iso2": "BR",
+		"iso3": "BRA",
+		"lat": -10,
+		"long": -55,
+		"flag": "https://disease.sh/assets/img/flags/br.png"
+	},
+	"cases": 37682660,
+	"todayCases": 0,
+	"deaths": 704159,
+	"todayDeaths": 0,
+	"recovered": 36249161,
+	"todayRecovered": 0,
+	"active": 729340,
+	"critical": 0,
+	"casesPerOneMillion": 174980,
+	"deathsPerOneMillion": 3270,
+	"tests": 63776166,
+	"testsPerOneMillion": 296146,
+	"population": 215353593,
+	"continent": "South America",
+	"oneCasePerPeople": 6,
+	"oneDeathPerPeople": 306,
+	"oneTestPerPeople": 3,
+	"activePerOneMillion": 3386.71,
+	"recoveredPerOneMillion": 168323.92,
+	"criticalPerOneMillion": 0
+}
