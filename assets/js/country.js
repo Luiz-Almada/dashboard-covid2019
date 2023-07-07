@@ -1,15 +1,19 @@
+import { formatDate } from '../../Utils/funcoes.js';
+
 let json;
 let jsonDiseaseHistoricalAll;
 let canvasLinhas = null; 
+let cmbData;
+let country;
 
 //async function carregarJsonAsync() {  // outra Sintaxy
-carregarJsonAsync = async () => {
+async function carregarJsonAsync() {
     //let resAll = await fetch("http://localhost:3001/all", {method: 'GET', redirect: 'follow'})
 
     jsonDiseaseHistoricalAll = await (await fetch('data/diseaseHistoricalAll.json', { mode: 'no-cors' })).json();
     carregarCombos();
 
-    country = document.getElementById("cmbCountry").options[document.getElementById("cmbCountry").selectedIndex].value
+    const country = document.getElementById("cmbCountry").options[document.getElementById("cmbCountry").selectedIndex].value
 
     json = await (await fetch(`https://disease.sh/v3/covid-19/historical/${country}/?lastdays=all`)).json();
 
@@ -20,10 +24,7 @@ carregarJsonAsync = async () => {
 };
 
 criarEventosDom();
-
 carregarJsonAsync();
-
-
 
 function carregarCombos(){
   const cmbCountry = document.getElementById("cmbCountry");
@@ -62,12 +63,6 @@ function criarEventosDom(){
   });
 }
 
-
-
-
-
-
-
 function carregarDados() {
   getTotaisKPIs(json);
 }
@@ -100,7 +95,7 @@ function getTotalItens(data) {
   return valorMaiorData;
 }
 
-preencherSelectComDadosSet = (idCombo, setDataCombo) => {
+function preencherSelectComDadosSet(idCombo, setDataCombo) {
   let arrayOrdenado = Array.from(setDataCombo).sort();
 
   let select = document.getElementById(idCombo);
@@ -124,7 +119,6 @@ function criarGraficoLinhas(){
 
   //Tipo de dados
   cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
-
   let arrLabels = Object.keys(eval(`json.timeline.${cmbData}`))
   let arrValues = Object.values(eval(`json.timeline.${cmbData}`))
   
@@ -182,7 +176,6 @@ function criarGraficoLinhas(){
   });
 }
 
-
 function aplicarFiltroDeDatas(){
   const [mes_start, dia_start, ano_start] = document.getElementById("date_start").value.split('-');
   const dataInicio  = new Date(`${mes_start}/${dia_start}/${ano_start}`);
@@ -194,7 +187,7 @@ function aplicarFiltroDeDatas(){
 
   //const casos = json.timeline.cases;
   const casos = eval(`json.timeline.${cmbData}`);
-  console.log(casos);
+  // console.log(casos);
   const casosFiltrados = {};
 
   for (const data in casos) {
@@ -210,12 +203,11 @@ function aplicarFiltroDeDatas(){
     }
 }
 
-console.log(casosFiltrados);
+// console.log(casosFiltrados);
 
 //Previsão de Ajuste: 
 //eval(`json.timeline.${cmbData}`)= casosFiltrados;
 json.timeline.cases = casosFiltrados;
 
-
-console.log(json);
+// console.log(json);
 }
