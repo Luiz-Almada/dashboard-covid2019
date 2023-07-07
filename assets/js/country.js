@@ -10,7 +10,9 @@ let country;
 async function carregarJsonAsync() {
     //let resAll = await fetch("http://localhost:3001/all", {method: 'GET', redirect: 'follow'})
 
-    jsonDiseaseHistoricalAll = await (await fetch('data/diseaseHistoricalAll.json', { mode: 'no-cors' })).json();
+    // jsonDiseaseHistoricalAll = await (await fetch('data/diseaseHistoricalAll.json', { mode: 'no-cors' })).json();
+    jsonDiseaseHistoricalAll = await (await fetch('https://disease.sh/v3/covid-19/historical')).json();
+    
     carregarCombos();
 
     const country = document.getElementById("cmbCountry").options[document.getElementById("cmbCountry").selectedIndex].value
@@ -38,27 +40,27 @@ function carregarCombos(){
 function criarEventosDom(){
   document.getElementById("cmbCountry").addEventListener("change", (e) => {
     carregarJsonAsync();
-    carregarDados();
+    // carregarDados();
   });
 
   document.getElementById("cmbData").addEventListener("change", (e) => {
     carregarJsonAsync();
-    carregarDados();
+    // carregarDados();
   });
 
   document.getElementById("filtro").addEventListener("click", (e) => {
     carregarJsonAsync();
-    carregarDados();
+    // carregarDados();
   });
 
-  document.getElementById("date_start").addEventListener("click", (e) => {
+  document.getElementById("date_start").addEventListener("change", (e) => {
     carregarJsonAsync();
-    carregarDados();
+    // carregarDados();
   });
 
-  document.getElementById("date_end").addEventListener("click", (e) => {
+  document.getElementById("date_end").addEventListener("change", (e) => {
     carregarJsonAsync();
-    carregarDados();
+    // carregarDados();
   });
 }
 
@@ -117,11 +119,14 @@ function preencherSelectComDadosSet(idCombo, setDataCombo) {
 function criarGraficoLinhas(){
 
   //Tipo de dados
-  cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
+  // cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
+  const elemSelecionado = document.getElementById("cmbData");
+  const opcaoSelecionada = elemSelecionado.selectedOptions[0];
+  const textoOpcaoSelecionada = opcaoSelecionada.textContent;
+
   let arrLabels = Object.keys(eval(`json.timeline.${cmbData}`))
   let arrValues = Object.values(eval(`json.timeline.${cmbData}`))
   
-
   //criar dados da linha média
   const soma = arrValues.reduce((acc, valor) => acc + valor, 0);
   const media = soma / arrValues.length;
@@ -139,7 +144,7 @@ function criarGraficoLinhas(){
       datasets: [
         {
           data: arrValues,
-          label: "Casos confirmados",
+          label: textoOpcaoSelecionada,
           borderColor: "rgb(60,286,159)",
           backgroundColor: "rgb(60,286,159,0.1)",
         },
@@ -160,7 +165,7 @@ function criarGraficoLinhas(){
         },
         title: {
           display: true,
-          text: "Curva de COVID",
+          text: "Curva diária de Covid-19",
         },
         layout: {
           padding: {
@@ -200,13 +205,23 @@ function aplicarFiltroDeDatas(){
     if (dataFormatada >= dataInicioFormatada && dataFormatada <= dataFimFormatada) {
       casosFiltrados[data] = casos[data];
     }
-}
+  }
 
-// console.log(casosFiltrados);
+  // console.log(casosFiltrados);
+  //Previsão de Ajuste: 
+  //eval(`json.timeline.${cmbData}`)= casosFiltrados;
+  // json.timeline.cases = casosFiltrados;
 
-//Previsão de Ajuste: 
-//eval(`json.timeline.${cmbData}`)= casosFiltrados;
-json.timeline.cases = casosFiltrados;
+  switch (cmbData) {
+    case "cases":
+      json.timeline.cases = casosFiltrados;
+      break;
+    case "deaths":
+      json.timeline.deaths = casosFiltrados;
+      break;
+    case "recovered":
+      json.timeline.recovered = casosFiltrados;
+      break;
+  }
 
-// console.log(json);
 }
