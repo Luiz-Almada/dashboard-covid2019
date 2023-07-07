@@ -14,6 +14,8 @@ let newConfirmed;
 let newDeaths;
 let newRecovered;
 
+const image = new Image(15, 15);
+
 (async () => {
   resSummaries = await (await fetch("data/diseaseCountries.json")).json();
   resGlobal = await (await fetch("data/diseaseAll.json")).json();
@@ -124,7 +126,7 @@ function gerarGraficoBarra(){
           usePointStyle: true,
           callbacks: {
             labelPointStyle: (context) => {
-              const image = new Image(15, 15);
+              // const image = new Image(15, 15);
               // const imagePath = summaryTop10.map(item => item.countryInfo.flag)
               // image.src = imagePath[context.dataIndex]
               image.src = '/assets/img/flags/' + summaryTop10[context.dataIndex].countryInfo.iso2 + '.png'

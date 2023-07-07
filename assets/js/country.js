@@ -17,7 +17,6 @@ async function carregarJsonAsync() {
 
     json = await (await fetch(`https://disease.sh/v3/covid-19/historical/${country}/?lastdays=all`)).json();
 
-
     aplicarFiltroDeDatas();
     criarGraficoLinhas();
     carregarDados(json);
