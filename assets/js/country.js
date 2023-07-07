@@ -124,6 +124,7 @@ function criarGraficoLinhas(){
 
   //Tipo de dados
   cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
+
   let arrLabels = Object.keys(eval(`json.timeline.${cmbData}`))
   let arrValues = Object.values(eval(`json.timeline.${cmbData}`))
   
@@ -210,7 +211,11 @@ function aplicarFiltroDeDatas(){
 }
 
 console.log(casosFiltrados);
+
+//Previsão de Ajuste: 
+//eval(`json.timeline.${cmbData}`)= casosFiltrados;
 json.timeline.cases = casosFiltrados;
+
 
 console.log(json);
 }
