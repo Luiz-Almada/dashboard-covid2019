@@ -1,5 +1,5 @@
 export function formatDate(dateSource) {
-  //Formata a data
+  //Formata a data (dateSource)
   let date = new Date(dateSource); // recebe a data a ser formatada
 
   let day = date.getDate(); // Obtém o dia do mês
