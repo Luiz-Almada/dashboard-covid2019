@@ -2,85 +2,90 @@ import { formatDate } from '../../Utils/funcoes.js';
 
 let json;
 let jsonDiseaseHistoricalAll;
-let canvasLinhas = null; 
+let canvasLinhas = null;
 let cmbData;
 let country;
 
 //async function carregarJsonAsync() {  // outra Sintaxy
 async function carregarJsonAsync() {
-    //let resAll = await fetch("http://localhost:3001/all", {method: 'GET', redirect: 'follow'})
+  //let resAll = await fetch("http://localhost:3001/all", {method: 'GET', redirect: 'follow'})
 
-    // jsonDiseaseHistoricalAll = await (await fetch('data/diseaseHistoricalAll.json', { mode: 'no-cors' })).json();
-    jsonDiseaseHistoricalAll = await (await fetch('https://disease.sh/v3/covid-19/historical')).json();
-    
-    carregarCombos();
+  // jsonDiseaseHistoricalAll = await (await fetch('data/diseaseHistoricalAll.json', { mode: 'no-cors' })).json();
+  jsonDiseaseHistoricalAll = await (
+    await fetch('https://disease.sh/v3/covid-19/historical')
+  ).json();
 
-    const country = document.getElementById("cmbCountry").options[document.getElementById("cmbCountry").selectedIndex].value
+  carregarCombos();
 
-    json = await (await fetch(`https://disease.sh/v3/covid-19/historical/${country}/?lastdays=all`)).json();
+  const country =
+    document.getElementById('cmbCountry').options[
+      document.getElementById('cmbCountry').selectedIndex
+    ].value;
 
-    aplicarFiltroDeDatas();
-    criarGraficoLinhas();
-    carregarDados(json);
-};
+  json = await (
+    await fetch(
+      `https://disease.sh/v3/covid-19/historical/${country}/?lastdays=all`
+    )
+  ).json();
+
+  aplicarFiltroDeDatas();
+  criarGraficoLinhas();
+  getTotaisKPIs(json);
+}
 
 criarEventosDom();
 carregarJsonAsync();
 
-function carregarCombos(){
-  const cmbCountry = document.getElementById("cmbCountry");
-  if(cmbCountry.length == 0) {
-    const setPais = Array.from(    new Set(jsonDiseaseHistoricalAll.map((item) => item.country))   );
-    preencherSelectComDadosSet("cmbCountry", setPais);
+function carregarCombos() {
+  const cmbCountry = document.getElementById('cmbCountry');
+  if (cmbCountry.length == 0) {
+    const setPais = Array.from(
+      new Set(jsonDiseaseHistoricalAll.map(item => item.country))
+    );
+    preencherSelectComDadosSet('cmbCountry', setPais);
   }
-
 }
 
-
-function criarEventosDom(){
-  document.getElementById("cmbCountry").addEventListener("change", (e) => {
+function criarEventosDom() {
+  document.getElementById('cmbCountry').addEventListener('change', e => {
     carregarJsonAsync();
-    // carregarDados();
   });
 
-  document.getElementById("cmbData").addEventListener("change", (e) => {
+  document.getElementById('cmbData').addEventListener('change', e => {
     carregarJsonAsync();
-    // carregarDados();
   });
 
-  document.getElementById("filtro").addEventListener("click", (e) => {
+  document.getElementById('filtro').addEventListener('click', e => {
     carregarJsonAsync();
-    // carregarDados();
   });
 
-  document.getElementById("date_start").addEventListener("change", (e) => {
+  document.getElementById('date_start').addEventListener('change', e => {
     carregarJsonAsync();
-    // carregarDados();
   });
 
-  document.getElementById("date_end").addEventListener("change", (e) => {
+  document.getElementById('date_end').addEventListener('change', e => {
     carregarJsonAsync();
-    // carregarDados();
   });
 }
-
-function carregarDados() {
-  getTotaisKPIs(json);
-}
-
 
 function getTotaisKPIs(result) {
-  let kpiconfirmed = document.getElementById("kpiconfirmed");
-  let kpideaths = document.getElementById("kpideaths");
-  let kpirecovered = document.getElementById("kpirecovered");
+  let kpiconfirmed = document.getElementById('kpiconfirmed');
+  let kpideaths = document.getElementById('kpideaths');
+  let kpirecovered = document.getElementById('kpirecovered');
 
-  kpiconfirmed.textContent = getTotalItens(result.timeline.cases).toLocaleString("pt-BR");
-  kpideaths.textContent = getTotalItens(result.timeline.deaths).toLocaleString("pt-BR");
-  kpirecovered.textContent = getTotalItens(result.timeline.recovered).toLocaleString("pt-BR");
+  kpiconfirmed.textContent = getTotalItens(
+    result.timeline.cases
+  ).toLocaleString('pt-BR');
+  kpideaths.textContent = getTotalItens(result.timeline.deaths).toLocaleString(
+    'pt-BR'
+  );
+  kpirecovered.textContent = getTotalItens(
+    result.timeline.recovered
+  ).toLocaleString('pt-BR');
 }
 
 function getTotalItens(data) {
-  const cmbCountry = document.getElementById("cmbCountry");
+  const cmbCountry = document.getElementById('cmbCountry');
 
   // Converter o objeto em um array de pares chave-valor
   const arrayDados = Object.entries(data);
@@ -107,52 +112,50 @@ function preencherSelectComDadosSet(idCombo, setDataCombo) {
   }
 
   //Seta o valor default (Brazil)
-  let valorPadrao = "Brazil"; // Defina o valor padrão que você deseja
+  let valorPadrao = 'Brazil'; // Defina o valor padrão que você deseja
   for (let i = 0; i < select.options.length; i++) {
     if (select.options[i].value === valorPadrao) {
       select.selectedIndex = i;
       break;
     }
   }
-};
+}
 
-function criarGraficoLinhas(){
-
+function criarGraficoLinhas() {
   //Tipo de dados
   // cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
-  const elemSelecionado = document.getElementById("cmbData");
+  const elemSelecionado = document.getElementById('cmbData');
   const opcaoSelecionada = elemSelecionado.selectedOptions[0];
   const textoOpcaoSelecionada = opcaoSelecionada.textContent;
 
-  let arrLabels = Object.keys(eval(`json.timeline.${cmbData}`))
-  let arrValues = Object.values(eval(`json.timeline.${cmbData}`))
-  
+  let arrLabels = Object.keys(eval(`json.timeline.${cmbData}`));
+  let arrValues = Object.values(eval(`json.timeline.${cmbData}`));
+
   //criar dados da linha média
   const soma = arrValues.reduce((acc, valor) => acc + valor, 0);
   const media = soma / arrValues.length;
   const arrMedia = Array.from(arrValues, () => media);
 
-  
   // Verificar se o gráfico já existe e destruí-lo, se necessário
   if (canvasLinhas) {
     canvasLinhas.destroy();
   }
-  canvasLinhas = new Chart(document.getElementById("linhas"), {
-    type: "line",
+  canvasLinhas = new Chart(document.getElementById('linhas'), {
+    type: 'line',
     data: {
       labels: arrLabels,
       datasets: [
         {
           data: arrValues,
           label: textoOpcaoSelecionada,
-          borderColor: "rgb(60,286,159)",
-          backgroundColor: "rgb(60,286,159,0.1)",
+          borderColor: 'rgb(60,286,159)',
+          backgroundColor: 'rgb(60,286,159,0.1)',
         },
         {
           data: arrMedia,
-          label: "Média",
-          borderColor: "rgb(255,140,13)",
-          backgroundColor: "rgb(255,140,13,0.1)",
+          label: 'Média',
+          borderColor: 'rgb(255,140,13)',
+          backgroundColor: 'rgb(255,140,13,0.1)',
         },
       ],
     },
@@ -161,11 +164,11 @@ function criarGraficoLinhas(){
       plugins: {
         legend: {
           display: true,
-          position: "left", //top, bottom, left, rigth
+          position: 'left', //top, bottom, left, rigth
         },
         title: {
           display: true,
-          text: "Curva diária de Covid-19",
+          text: 'Curva diária de Covid-19',
         },
         layout: {
           padding: {
@@ -180,14 +183,21 @@ function criarGraficoLinhas(){
   });
 }
 
-function aplicarFiltroDeDatas(){
-  const [mes_start, dia_start, ano_start] = document.getElementById("date_start").value.split('-');
-  const dataInicio  = new Date(`${mes_start}/${dia_start}/${ano_start}`);
-  const [mes_end, dia_end, ano_end] = document.getElementById("date_end").value.split('-');
-  const dataFim  = new Date(`${mes_end}/${dia_end}/${ano_end}`);
+function aplicarFiltroDeDatas() {
+  const [mes_start, dia_start, ano_start] = document
+    .getElementById('date_start')
+    .value.split('-');
+  const dataInicio = new Date(`${mes_start}/${dia_start}/${ano_start}`);
+  const [mes_end, dia_end, ano_end] = document
+    .getElementById('date_end')
+    .value.split('-');
+  const dataFim = new Date(`${mes_end}/${dia_end}/${ano_end}`);
 
-
-  cmbData = document.getElementById("cmbData").options[document.getElementById("cmbData").selectedIndex].value.toLowerCase();
+  cmbData = document
+    .getElementById('cmbData')
+    .options[
+      document.getElementById('cmbData').selectedIndex
+    ].value.toLowerCase();
 
   //const casos = json.timeline.cases;
   const casos = eval(`json.timeline.${cmbData}`);
@@ -202,26 +212,28 @@ function aplicarFiltroDeDatas(){
     const dataInicioFormatada = new Date(dataInicio);
     const dataFimFormatada = new Date(dataFim);
 
-    if (dataFormatada >= dataInicioFormatada && dataFormatada <= dataFimFormatada) {
+    if (
+      dataFormatada >= dataInicioFormatada &&
+      dataFormatada <= dataFimFormatada
+    ) {
       casosFiltrados[data] = casos[data];
     }
   }
 
   // console.log(casosFiltrados);
-  //Previsão de Ajuste: 
+  //Previsão de Ajuste:
   //eval(`json.timeline.${cmbData}`)= casosFiltrados;
   // json.timeline.cases = casosFiltrados;
 
   switch (cmbData) {
-    case "cases":
+    case 'cases':
       json.timeline.cases = casosFiltrados;
       break;
-    case "deaths":
+    case 'deaths':
       json.timeline.deaths = casosFiltrados;
       break;
-    case "recovered":
+    case 'recovered':
       json.timeline.recovered = casosFiltrados;
       break;
   }
-
 }
